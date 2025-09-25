@@ -14,6 +14,7 @@ ADD ./requirements.txt /tmp/requirements.txt
 RUN apt-get update -yqq \
     && apt-get install -yqq --no-install-recommends \
     curl \
+    ninja-build \
     direnv \
     build-essential \
     cmake \
