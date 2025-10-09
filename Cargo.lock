@@ -6399,7 +6399,9 @@ dependencies = [
  "styx-errors",
  "styx-memory",
  "styx-memory-type",
+ "styx-util",
  "styx-workspace-hack",
+ "test-case",
  "thiserror 2.0.17",
 ]
 

@@ -4,5 +4,12 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # install GDB + GCC for ARM
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    make \
+    cmake \
     gcc-arm-none-eabi \
-    gdb-multiarch
+    gdb-multiarch \
+    binutils-arm-none-eabi \
+    libnewlib-arm-none-eabi \
+    libstdc++-arm-none-eabi-dev \
+    libstdc++-arm-none-eabi-newlib \
+    && rm -rf /var/lib/apt/lists/*

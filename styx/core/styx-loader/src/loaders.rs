@@ -2,11 +2,13 @@
 // import all the modules
 mod blackfin;
 mod elf;
+mod ihex;
 mod parameterized;
 mod raw;
 
 // re-export under styx-loader::loaders::*;
 pub use blackfin::BlackfinLDRLoader;
 pub use elf::{ElfLoader, ElfLoaderConfig};
+pub use ihex::IhexLoader;
 pub use parameterized::*;
 pub use raw::RawLoader;
