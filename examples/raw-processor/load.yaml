@@ -1,6 +1,7 @@
 # Actions to be taken as part of the load to set up an execution environment.
 # Valid actions are:
 #   - FileElf - load an ELF
+#   - FileIhex - load an Intel HEX file
 #   - FileRaw - load a raw file
 #   - MemoryRegion - map a memory region
 #   - RegisterImmediate - initialize a register with an immediate value
