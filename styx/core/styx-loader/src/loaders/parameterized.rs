@@ -3,6 +3,7 @@
 //!
 //! Valid actions are:
 //!   - FileElf - load an ELF
+//!   - FileIhex - load an Intel HEX file
 //!   - FileRaw - load a raw file
 //!   - MemoryRegion - map a memory region
 //!   - RegisterImmediate - initialize a register with an immediate value
@@ -22,6 +23,7 @@ use styx_errors::anyhow::Context;
 use styx_memory::{MemoryPermissions, MemoryRegion};
 
 use super::elf::load_elf;
+use super::ihex::IhexLoader;
 use super::raw::load_raw_with_base;
 
 /// This record structure specifies the parameters for a load of an ELF.
@@ -31,6 +33,13 @@ pub struct LoadFileElf {
     /// XXX: Not yet implemented.
     pub base: u64,
     /// Path to the ELF to be loaded.
+    pub file: String,
+}
+
+/// This record structure specifies the parameters for a load of an Intel HEX file.
+#[derive(Deserialize, PartialEq, Debug, Clone)]
+pub struct LoadFileIhex {
+    /// Path to the Intel HEX file to be loaded.
     pub file: String,
 }
 
@@ -114,6 +123,7 @@ pub struct LoadEnvStateVariable(String, u64);
 pub enum LoadRecordType {
     EnvironmentStateVariable(LoadEnvStateVariable),
     FileElf(LoadFileElf),
+    FileIhex(LoadFileIhex),
     FileRaw(LoadFileRaw),
     MemoryRegion(LoadMemoryRegion),
     RegisterImmediate(LoadRegisterImmediate),
@@ -173,6 +183,7 @@ impl Loader for ParameterizedLoader {
     /// contain a list of [`LoadRecordType`] structures. These structures describe the action to be
     /// performed. The available actions are:
     /// - Load an ELF file.
+    /// - Load an Intel HEX file.
     /// - Load a raw data file to a specified address with provided permissions.
     /// - Map a memory region to the specified address with provided permissions.
     /// - Initialize a register with an immediate value.
@@ -220,6 +231,21 @@ impl Loader for ParameterizedLoader {
                     warn_key_overwrite(&registers, &elf_desc.registers);
                     registers.extend(elf_desc.take_registers());
                     regions.extend(elf_desc.take_memory_regions());
+                }
+                LoadRecordType::FileIhex(ihex_record) => {
+                    // Load the Intel HEX file using the IhexLoader.
+                    let path = Path::new(&ihex_record.file);
+                    let data = fs::read(path).with_context(|| {
+                        format!("Failed to read Intel HEX file {}", path.display())
+                    })?;
+                    let loader = IhexLoader;
+                    let mut ihex_desc: MemoryLoaderDesc =
+                        loader.load_bytes(Cow::Owned(data), HashMap::new()).unwrap();
+
+                    // Save generated regions and register values to add to our final descriptor.
+                    warn_key_overwrite(&registers, &ihex_desc.registers);
+                    registers.extend(ihex_desc.take_registers());
+                    regions.extend(ihex_desc.take_memory_regions());
                 }
                 LoadRecordType::FileRaw(raw_record) => {
                     // Load the raw file into memory using the raw file loader.
@@ -331,6 +357,9 @@ mod tests {
             LoadRecordType::FileElf(LoadFileElf {
                 base: 0x10000,
                 file: "foo.elf".to_string(),
+            }),
+            LoadRecordType::FileIhex(LoadFileIhex {
+                file: "firmware.hex".to_string(),
             }),
             LoadRecordType::FileRaw(LoadFileRaw {
                 base: 0x80000,
