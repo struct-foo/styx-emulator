@@ -1,0 +1,100 @@
+
+Discarded input sections
+
+ .text          0x00000000        0x0 /var/folders/rw/lwfrmk1x4zl1ypddv2025mcm0000gn/T//ccbBnQwd.o
+ .data          0x00000000       0x10 /var/folders/rw/lwfrmk1x4zl1ypddv2025mcm0000gn/T//ccbBnQwd.o
+ .bss           0x00000000        0x0 /var/folders/rw/lwfrmk1x4zl1ypddv2025mcm0000gn/T//ccbBnQwd.o
+ .debug_info    0x00000000      0x11b /var/folders/rw/lwfrmk1x4zl1ypddv2025mcm0000gn/T//ccbBnQwd.o
+ .debug_abbrev  0x00000000       0xbe /var/folders/rw/lwfrmk1x4zl1ypddv2025mcm0000gn/T//ccbBnQwd.o
+ .debug_loclists
+                0x00000000       0x47 /var/folders/rw/lwfrmk1x4zl1ypddv2025mcm0000gn/T//ccbBnQwd.o
+ .debug_aranges
+                0x00000000       0x20 /var/folders/rw/lwfrmk1x4zl1ypddv2025mcm0000gn/T//ccbBnQwd.o
+ .debug_rnglists
+                0x00000000       0x1f /var/folders/rw/lwfrmk1x4zl1ypddv2025mcm0000gn/T//ccbBnQwd.o
+ .debug_line    0x00000000       0x89 /var/folders/rw/lwfrmk1x4zl1ypddv2025mcm0000gn/T//ccbBnQwd.o
+ .debug_str     0x00000000      0x11a /var/folders/rw/lwfrmk1x4zl1ypddv2025mcm0000gn/T//ccbBnQwd.o
+ .comment       0x00000000       0x13 /var/folders/rw/lwfrmk1x4zl1ypddv2025mcm0000gn/T//ccbBnQwd.o
+ .debug_frame   0x00000000       0x20 /var/folders/rw/lwfrmk1x4zl1ypddv2025mcm0000gn/T//ccbBnQwd.o
+ .ARM.attributes
+                0x00000000       0x2e /var/folders/rw/lwfrmk1x4zl1ypddv2025mcm0000gn/T//ccbBnQwd.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+FLASH            0x08000000         0x00010000         xr
+RAM              0x20000000         0x00004000         xrw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD /var/folders/rw/lwfrmk1x4zl1ypddv2025mcm0000gn/T//ccbBnQwd.o
+
+.isr_vector     0x08000000        0x0
+                0x08000000                        . = ALIGN (0x4)
+ *(.isr_vector)
+                0x08000000                        . = ALIGN (0x4)
+
+.text           0x08000000       0x20
+                0x08000000                        . = ALIGN (0x4)
+ *(.text.start)
+ .text.start    0x08000000       0x20 /var/folders/rw/lwfrmk1x4zl1ypddv2025mcm0000gn/T//ccbBnQwd.o
+                0x08000000                _start
+ *(.text)
+ *(.text*)
+                0x08000020                        . = ALIGN (0x4)
+
+.glue_7         0x08000020        0x0
+ .glue_7        0x08000020        0x0 linker stubs
+
+.glue_7t        0x08000020        0x0
+ .glue_7t       0x08000020        0x0 linker stubs
+
+.vfp11_veneer   0x08000020        0x0
+ .vfp11_veneer  0x08000020        0x0 linker stubs
+
+.v4_bx          0x08000020        0x0
+ .v4_bx         0x08000020        0x0 linker stubs
+
+.iplt           0x08000020        0x0
+ .iplt          0x08000020        0x0 /var/folders/rw/lwfrmk1x4zl1ypddv2025mcm0000gn/T//ccbBnQwd.o
+
+.rodata         0x08000020       0x18
+                0x08000020                        . = ALIGN (0x4)
+ *(.rodata)
+ .rodata        0x08000020       0x18 /var/folders/rw/lwfrmk1x4zl1ypddv2025mcm0000gn/T//ccbBnQwd.o
+                0x08000020                hello_msg
+                0x08000030                version_info
+                0x08000034                magic_number
+ *(.rodata*)
+                0x08000038                        . = ALIGN (0x4)
+
+.rel.dyn        0x08000038        0x0
+ .rel.iplt      0x08000038        0x0 /var/folders/rw/lwfrmk1x4zl1ypddv2025mcm0000gn/T//ccbBnQwd.o
+
+.data           0x20000000        0x0 load address 0x08000038
+                0x20000000                        . = ALIGN (0x4)
+                0x20000000                        _sdata = .
+ *(.data)
+ *(.data*)
+                0x20000000                        . = ALIGN (0x4)
+                0x20000000                        _edata = .
+
+.igot.plt       0x20000000        0x0 load address 0x08000038
+ .igot.plt      0x20000000        0x0 /var/folders/rw/lwfrmk1x4zl1ypddv2025mcm0000gn/T//ccbBnQwd.o
+
+.bss            0x20000000        0x0 load address 0x08000038
+                0x20000000                        . = ALIGN (0x4)
+                0x20000000                        _sbss = .
+ *(.bss)
+ *(.bss*)
+ *(COMMON)
+                0x20000000                        . = ALIGN (0x4)
+                0x20000000                        _ebss = .
+
+/DISCARD/
+ *(.comment)
+ *(.ARM.attributes)
+ *(.debug_*)
+OUTPUT(hello.elf elf32-littlearm)
+LOAD linker stubs

@@ -1,0 +1,146 @@
+# Intel HEX and ELF Loader Integration Test
+
+This directory contains test data for verifying that the Intel HEX loader and ELF loader produce consistent memory mappings when loading the same binary in different formats.
+
+## Purpose
+
+The Intel HEX loader integration test ensures that:
+1. Both loaders produce identical memory regions for the same program
+2. The actual binary data loaded matches byte-for-byte
+3. Entry points and start addresses are consistent between formats
+4. The loaders handle initialized data sections correctly
+
+## Test Program
+
+The test uses a minimal "Hello World" bare metal ARM program (`hello.c`) that:
+- Targets ARM Cortex-M4 architecture
+- Contains a simple string in the `.rodata` section
+- Has initialized data in the `.data` section
+- Includes a basic entry point (`_start`) function
+- Uses a custom linker script for predictable memory layout
+
+### Memory Layout
+
+The linker script (`link.ld`) defines:
+- **Flash memory**: Starting at `0x08000000` (64KB)
+- **RAM**: Starting at `0x20000000` (16KB)
+
+This layout is typical for STM32 microcontrollers and provides a realistic (and simple) test case.
+
+## Building the Test Binaries
+
+### Prerequisites
+
+You need the ARM embedded toolchain installed:
+- **macOS**: `brew install arm-none-eabi-gcc`
+- **Ubuntu/Debian**: `apt-get install gcc-arm-none-eabi`
+- **Arch Linux**: `pacman -S arm-none-eabi-gcc`
+
+### Build Commands
+
+```bash
+# Build all formats (ELF, Intel HEX, and binary)
+make all
+
+# View build information and section details
+make info
+
+# Clean build artifacts
+make clean
+```
+
+The Makefile produces:
+- `hello.elf` - The ELF format binary
+- `hello.hex` - Intel HEX format (converted from ELF using objcopy)
+- `hello.bin` - Raw binary format
+- `hello.lst` - Assembly listing for debugging
+- `hello.map` - Linker map file
+
+## Integration Tests
+
+The test suite (`tests/test_ihex_elf_comparison.rs`) contains four main tests:
+
+### 1. Memory Consistency Test (`test_elf_ihex_memory_consistency`)
+
+Verifies that:
+- Both loaders produce memory regions
+- For each Intel HEX region, there's a corresponding ELF region
+- The actual data bytes match exactly between formats
+
+### 2. Size Consistency Test (`test_elf_ihex_total_size_consistency`)
+
+Ensures that:
+- The total size of initialized data is consistent
+- Accounts for the fact that Intel HEX only contains initialized data (not .bss)
+- Allows small differences due to alignment/padding
+
+### 3. Start Address Test (`test_ihex_start_address_extraction`)
+
+Checks that:
+- Intel HEX Type 05 records (Start Linear Address) are properly parsed
+- The program counter (PC) is set to the correct start address
+- The address is within the expected flash region
+
+### 4. Entry Point Consistency Test (`test_ihex_elf_entry_point_consistency`)
+
+Verifies that:
+- Both formats produce the same entry point address
+- The PC register is set consistently when architecture hints are provided
+
+## Running the Tests
+
+```bash
+# Run all Intel HEX tests
+cargo test test_ihex
+
+# Run the comparison tests specifically
+cargo test --test test_ihex_elf_comparison
+
+# Run with output to see the verification details
+cargo test test_elf_ihex_memory_consistency -- --nocapture
+```
+
+## Expected Output
+
+When running with `--nocapture`, you should see output like:
+
+```
+=== ELF Loader Regions ===
+  Region 0: base=0x08000000, size=56 bytes
+
+=== Intel HEX Loader Regions ===
+  Region 0: base=0x08000000, size=56 bytes
+
+✓ Verified 56 bytes at 0x08000000 match between ELF and Intel HEX
+✓ All Intel HEX regions have matching content in ELF
+```
+
+## Extending the Tests
+
+To add more test cases:
+
+1. Create additional C programs with different memory layouts
+2. Modify the Makefile to build multiple targets
+3. Add new test functions that load and compare the different binaries
+
+Consider testing:
+- Multiple non-contiguous memory regions
+- Programs with larger data sections
+- Different architectures (AVR, PIC, etc.)
+- Intel HEX extended segment address records (Type 02)
+- Programs with complex initialization requirements
+
+## Intel HEX Format
+
+Intel HEX files consist of ASCII text records with:
+- Data records (Type 00): Contains actual program data
+- End of File (Type 01): Marks the end of the file
+- Extended Linear Address (Type 04): Sets upper 16 bits of address
+- Start Linear Address (Type 05): Specifies the entry point
+
+## References
+
+- [Intel HEX Format Specification](https://en.wikipedia.org/wiki/Intel_HEX)
+- [ELF Format Documentation](https://refspecs.linuxfoundation.org/elf/elf.pdf)
+- [ARM Cortex-M Memory Map](https://developer.arm.com/documentation/)
+- [GNU Binutils objcopy Documentation](https://sourceware.org/binutils/docs/binutils/objcopy.html)

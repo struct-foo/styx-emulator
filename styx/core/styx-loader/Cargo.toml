@@ -28,3 +28,4 @@ iset = { workspace = true }
 
 [dev-dependencies]
 mockall = { workspace = true }
+styx-util = { path = "../styx-util" }

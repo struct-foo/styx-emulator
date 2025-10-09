@@ -1,0 +1,30 @@
+
+hello.elf:     file format elf32-littlearm
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .isr_vector   00000000  08000000  08000000  00001038  2**0
+                  CONTENTS
+  1 .text         00000020  08000000  08000000  00001000  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .rodata       00000018  08000020  08000020  00001020  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  3 .data         00000000  20000000  20000000  00001038  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  4 .bss          00000000  20000000  20000000  00000000  2**0
+                  ALLOC
+
+Disassembly of section .text:
+
+08000000 <_start>:
+ 8000000:	4a06      	ldr	r2, [pc, #24]	@ (800001c <_start+0x1c>)
+ 8000002:	f102 010e 	add.w	r1, r2, #14
+ 8000006:	f812 3b01 	ldrb.w	r3, [r2], #1
+ 800000a:	f88d 3007 	strb.w	r3, [sp, #7]
+ 800000e:	428a      	cmp	r2, r1
+ 8000010:	f89d 3007 	ldrb.w	r3, [sp, #7]
+ 8000014:	d1f7      	bne.n	8000006 <_start+0x6>
+ 8000016:	bf00      	nop
+ 8000018:	bf00      	nop
+ 800001a:	e7fc      	b.n	8000016 <_start+0x16>
+ 800001c:	08000020 	.word	0x08000020
